@@ -10,7 +10,7 @@ var bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended : true }));
 
-console.log(process.env.DATABASE_HOST);
+
 
 var db = mysql.createConnection({
   host     : process.env.DATABASE_HOST,
@@ -21,13 +21,30 @@ var db = mysql.createConnection({
 
 
 
-db.connect((err) => {
-    if(err){
-        console.log(err);
+const connecttodb = () => {
+    db.connect(err => {
+        if(err){
+           console.log(err);
+        }else{
+           console.log("Mysql database is connected");
+        }
+    });
+}
+
+
+connecttodb();
+
+const handleError = (err) => {
+    console.log(err);
+    if(err.fatal){
+        connecttodb();
     }else{
-       console.log("Mysql database is connected");
+        return res.status(500).json({
+           error : err.message
+        }); 
     }
-});
+    
+}
 
 
 app.get("/" , (req, res) => {
@@ -95,9 +112,14 @@ app.get("/create/user" , (req , res) => {
 
     db.query(sql , (err , result) => {
         if(err){
-           return res.status(500).json({
-                error : err.message
-           });
+           if(err.fatal){
+               connecttodb();
+           }else{
+                return res.status(500).json({
+                    error : err.message
+                });
+           }
+           
         }
 
         console.log("user table is created");  
