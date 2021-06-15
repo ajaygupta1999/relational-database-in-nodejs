@@ -22,29 +22,22 @@ var db = mysql.createConnection({
 
 
 const connecttodb = () => {
-    db.connect(err => {
-        if(err){
-           console.log(err);
-        }else{
-           console.log("Mysql database is connected");
-        }
+    return new Promise((resolve, reject) => {
+        db.connect(err => {
+            if(err){
+               reject(err);
+            }else{
+                console.log("Mysql database is connected");
+                resolve("Mysql database is connected");
+            }
+        });
     });
+        
 }
 
 
 connecttodb();
 
-const handleError = (err) => {
-    console.log(err);
-    if(err.fatal){
-        connecttodb();
-    }else{
-        return res.status(500).json({
-           error : err.message
-        }); 
-    }
-    
-}
 
 
 app.get("/" , (req, res) => {
@@ -257,7 +250,7 @@ app.get("/create/userphoto" , (req , res) => {
                      });
                 }
              }
-             
+
             console.log("user photo table is created");
         });
 });
