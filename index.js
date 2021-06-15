@@ -1,18 +1,22 @@
+
+require('dotenv').config();
 const express = require("express");
 const app = express();
 var mysql      = require('mysql');
 var bodyParser = require("body-parser");
 
+
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended : true }));
 
-
-
+console.log(process.env.DATABASE_HOST);
 
 var db = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  database : 'mysqldb'
+  host     : process.env.DATABASE_HOST,
+  user     : process.env.DATABASE_USER,
+  password : process.env.DATABASE_PASSWORD,
+  database : process.env.DATABASE_NAME
 });
 
 
