@@ -53,52 +53,52 @@ app.get("/" , (req, res) => {
 });
 
 
-app.get("/createdb" , async (req , res) => {
-    try{
-        let sql = 'CREATE DATABASE SQLTEST';
-        db.query(sql , (err , result) => {
-            if(err){
-                console.log(err);
-                return res.json({ error :  err });
-            }
+// app.get("/createdb" , async (req , res) => {
+//     try{
+//         let sql = 'CREATE DATABASE SQLTEST';
+//         db.query(sql , (err , result) => {
+//             if(err){
+//                 console.log(err);
+//                 return res.json({ error :  err });
+//             }
 
-            console.log(result);
-            return res.json({ result : result });
-        });
-    }catch(err){
-        console.log(err.message)
-    }
-});
+//             console.log(result);
+//             return res.json({ result : result });
+//         });
+//     }catch(err){
+//         console.log(err.message)
+//     }
+// });
 
 
 
-app.get("/updatedata" , async (req , res) => {
-    try{
-        // Insert value in user1 table ==
-        // let sql = "INSERT INTO user1 VALUES (?,?,?,?)";
-        // db.query(sql , [ "NULL" , "ajay" , "gupta" , "ajay gupta2"] ,  (err , result) => {
-        //     if(err){
-        //         return res.json({ err : err });
-        //     }
+// app.get("/updatedata" , async (req , res) => {
+//     try{
+//         // Insert value in user1 table ==
+//         // let sql = "INSERT INTO user1 VALUES (?,?,?,?)";
+//         // db.query(sql , [ "NULL" , "ajay" , "gupta" , "ajay gupta2"] ,  (err , result) => {
+//         //     if(err){
+//         //         return res.json({ err : err });
+//         //     }
 
-        //     return res.json({  result : result });
-        // });
+//         //     return res.json({  result : result });
+//         // });
 
-        // get all rows from database
-        let sql = "SELECT * FROM user1";
-        db.query(sql , (err , rows , fields) => {
-            if(err) 
-               return res.json({ err });
+//         // get all rows from database
+//         let sql = "SELECT * FROM user1";
+//         db.query(sql , (err , rows , fields) => {
+//             if(err) 
+//                return res.json({ err });
 
-            console.log(rows[0].firstname);
-            return res.json({ rows , fields });
-        });
-        // return res.json(result);
+//             console.log(rows[0].firstname);
+//             return res.json({ rows , fields });
+//         });
+//         // return res.json(result);
 
-    }catch(err){
-        console.log(err.message);
-    }
-});
+//     }catch(err){
+//         console.log(err.message);
+//     }
+// });
 
 
 // Create all tables ==
@@ -146,13 +146,15 @@ app.get("/create/photo" , (req , res) => {
         )`;
 
         db.query(sqlofphoto , (err , result) => {
-            if(err.fatal){
-                connecttodb();
-            }else{
-                 return res.status(500).json({
-                     error : err.message
-                 });
-            }
+            if(err){
+                if(err.fatal){
+                    connecttodb();
+                }else{
+                     return res.status(500).json({
+                         error : err.message
+                     });
+                }
+             }
 
             console.log("photo table is created");
             return res.json("photo table is created");
@@ -181,13 +183,15 @@ app.get("/create/comment" , (req , res) => {
     )`;
 
     db.query(sqlcomment , (err , result) => {
-        if(err.fatal){
-            connecttodb();
-        }else{
-             return res.status(500).json({
-                 error : err.message
-             });
-        }
+        if(err){
+            if(err.fatal){
+                connecttodb();
+            }else{
+                 return res.status(500).json({
+                     error : err.message
+                 });
+            }
+         }
 
         console.log("comment table is created");
         return res.json("comment table is created");
@@ -209,13 +213,15 @@ app.get("/create/like" , (req , res) => {
         )`;
 
         db.query(sqllike , (err , result) => {
-            if(err.fatal){
-                connecttodb();
-            }else{
-                 return res.status(500).json({
-                     error : err.message
-                 });
-            }
+            if(err){
+                if(err.fatal){
+                    connecttodb();
+                }else{
+                     return res.status(500).json({
+                         error : err.message
+                     });
+                }
+             }
 
             console.log("like table is created");
         });
@@ -242,13 +248,16 @@ app.get("/create/userphoto" , (req , res) => {
         )`;
 
         db.query(sqluserphoto , (err , result) => {
-            if(err.fatal){
-                connecttodb();
-            }else{
-                 return res.status(500).json({
-                     error : err.message
-                 });
-            }
+            if(err){
+                if(err.fatal){
+                    connecttodb();
+                }else{
+                     return res.status(500).json({
+                         error : err.message
+                     });
+                }
+             }
+             
             console.log("user photo table is created");
         });
 });
@@ -262,13 +271,16 @@ app.post("/create/newuser" , (req , res) => {
         let sql = `insert into user values (? , ?)`;
 
         db.query(sql , ["NULL" , name] , (err , result) => {
-            if(err.fatal){
-                connecttodb();
-            }else{
-                 return res.status(500).json({
-                     error : err.message
-                 });
+            if(err){
+                if(err.fatal){
+                    connecttodb();
+                }else{
+                     return res.status(500).json({
+                         error : err.message
+                     });
+                }
             }
+            
 
             return res.json("User is created successfully");
         });
@@ -287,24 +299,26 @@ app.post("/user/:id/post/photo" , (req , res) => {
     let { name , imgurl , des } = req.body;
     let sql = `insert into photo values(? , ? , ? , ?)`;
     db.query(sql , ["NULL" , name , imgurl , des] , (err , rows , field) => {
-        if(err.fatal){
-            connecttodb();
-        }else{
-            console.log(err);
-            return res.status(500).json({
-                error : err.message
-            });
+        if(err){
+            if(err.fatal){
+                connecttodb();
+            }else{
+                 return res.status(500).json({
+                     error : err.message
+                 });
+            }
         }
 
         let searchall = `select * from photo`;
         db.query(searchall , (err , rows , fields) => {
-            if(err.fatal){
-                connecttodb();
-            }else{
-                console.log(err);
-                return res.status(500).json({
-                    error : err.message
-                });
+            if(err){
+                if(err.fatal){
+                    connecttodb();
+                }else{
+                     return res.status(500).json({
+                         error : err.message
+                     });
+                }
             }
             
             let lastdata = rows[rows.length - 1];
@@ -312,13 +326,14 @@ app.post("/user/:id/post/photo" , (req , res) => {
             console.log("photo id => " , photoid);
             let createdrel = 'insert into userphot values (? , ?)';
             db.query(createdrel , [ req.params.id , photoid ] , (err , result) =>{
-                if(err.fatal){
-                    connecttodb();
-                }else{
-                    console.log(err);
-                    return res.status(500).json({
-                        error : err.message
-                    });
+                if(err){
+                    if(err.fatal){
+                        connecttodb();
+                    }else{
+                         return res.status(500).json({
+                             error : err.message
+                         });
+                    }
                 }
 
                 console.log("photo is successfully created");
@@ -335,38 +350,41 @@ app.post("/user/:id/post/photo" , (req , res) => {
 app.post("/user/:userid/comment/photo/:photoid" , (req , res) => {
     let searchuser = `select * from user where id=?`;
     db.query(searchuser , [req.params.userid] , (err, rows , fields) => {
-        if(err.fatal){
-            connecttodb();
-        }else{
-            console.log(err);
-            return res.status(500).json({
-                error : err.message
-            });
+        if(err){
+            if(err.fatal){
+                connecttodb();
+            }else{
+                 return res.status(500).json({
+                     error : err.message
+                 });
+            }
         }
 
         if(rows.length > 0){
             let searchphoto = `select * from photo where id=?`;
             db.query(searchphoto , [ req.params.photoid ], (err , rows , fields) => {
-                if(err.fatal){
-                    connecttodb();
-                }else{
-                    console.log(err);
-                    return res.status(500).json({
-                        error : err.message
-                    });
+                if(err){
+                    if(err.fatal){
+                        connecttodb();
+                    }else{
+                         return res.status(500).json({
+                             error : err.message
+                         });
+                    }
                 }
 
                 if(rows.length > 0){
                     console.log("Photo is found");
                     let createcomment = `insert into comment values (? , ? , ? , ?)`;
                     db.query(createcomment, ["NULL" , req.body.text, req.params.userid , req.params.photoid ] , (err , rows , field) => {
-                        if(err.fatal){
-                            connecttodb();
-                        }else{
-                            console.log(err);
-                            return res.status(500).json({
-                                error : err.message
-                            });
+                        if(err){
+                            if(err.fatal){
+                                connecttodb();
+                            }else{
+                                 return res.status(500).json({
+                                     error : err.message
+                                 });
+                            }
                         }
 
                         console.log("Comment is created");
@@ -389,13 +407,14 @@ app.delete("/delete/photo/:id" , (req , res) => {
     let deletephoto = `delete from photo where id=${req.params.id}`;
 
     db.query(deletephoto , (err , result) => {
-        if(err.fatal){
-            connecttodb();
-        }else{
-            console.log(err);
-            return res.status(500).json({
-                error : err.message
-            });
+        if(err){
+            if(err.fatal){
+                connecttodb();
+            }else{
+                 return res.status(500).json({
+                     error : err.message
+                 });
+            }
         }
 
         return res.json("deleted successfully");
@@ -409,25 +428,27 @@ app.get("/user/:id/allphotos" , (req , res) => {
     // user-photo == all photos
     let finduser = `select * from user where id=${req.params.id}`;
     db.query(finduser , (err , rowsss  ,fields) => {
-        if(err.fatal){
-            connecttodb();
-        }else{
-            console.log(err);
-            return res.status(500).json({
-                error : err.message
-            });
+        if(err){
+            if(err.fatal){
+                connecttodb();
+            }else{
+                 return res.status(500).json({
+                     error : err.message
+                 });
+            }
         }
 
         if(rowsss.length > 0){
             let findallphotosofuser = `select * from userphot where userid=${req.params.id}`;
             db.query(findallphotosofuser , (err , rows , fields) => {
-                if(err.fatal){
-                    connecttodb();
-                }else{
-                    console.log(err);
-                    return res.status(500).json({
-                        error : err.message
-                    });
+                if(err){
+                    if(err.fatal){
+                        connecttodb();
+                    }else{
+                         return res.status(500).json({
+                             error : err.message
+                         });
+                    }
                 }
 
                 console.log(rows);
@@ -444,13 +465,14 @@ app.get("/user/:id/allphotos" , (req , res) => {
 
                 let findallphotos = `select * from photo where id in ${photosidtupple}`;
                 db.query(findallphotos , (err , rowss , field) => {
-                    if(err.fatal){
-                        connecttodb();
-                    }else{
-                        console.log(err);
-                        return res.status(500).json({
-                            error : err.message
-                        });
+                    if(err){
+                        if(err.fatal){
+                            connecttodb();
+                        }else{
+                             return res.status(500).json({
+                                 error : err.message
+                             });
+                        }
                     }
 
                     console.log(rowss);
